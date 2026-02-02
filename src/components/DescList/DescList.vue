@@ -1,47 +1,47 @@
 <script lang="ts" setup>
 // windsurf- 通用描述列表组件
-import type { DescDataBlock } from '../DescCard/types'
-import { FileList } from '@/components/FileList'
-import { getDictLabel } from '@/utils/dict'
-import { formatBoolean, formatDate, formatNumber } from '@/utils/format'
+import type { DescDataBlock } from "../DescCard/types";
+import { FileList } from "@/components/FileList";
+import { getDictLabel } from "@/utils/dict";
+import { formatBoolean, formatDate, formatNumber } from "@/utils/format";
 
 defineOptions({
-  name: 'DescList',
-})
+  name: "DescList",
+});
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 // windsurf- Props 定义
 interface Props {
   // windsurf- 数据块配置数组
-  blocks: DescDataBlock[]
+  blocks: DescDataBlock[];
   // windsurf- 数据源
-  data: Record<string, any>
+  data: Record<string, any>;
 }
 
 // windsurf- 获取字段值
 function getFieldValue(field: string): string {
-  const value = props.data?.[field]
-  if (value === null || value === undefined || value === '') {
-    return '-'
+  const value = props.data?.[field];
+  if (value === null || value === undefined || value === "") {
+    return "-";
   }
-  return String(value)
+  return String(value);
 }
 
 //  获取原生值
 function getNativeValue(field: string): string {
-  const value = props.data?.[field]
-  return value
+  const value = props.data?.[field];
+  return value;
 }
 
 // windsurf- 获取字典标签值
 function getDictValue(field: string, dictType: string): string {
-  const value = props.data?.[field]
-  if (value === null || value === undefined || value === '') {
-    return '-'
+  const value = props.data?.[field];
+  if (value === null || value === undefined || value === "") {
+    return "-";
   }
-  const label = getDictLabel(dictType, value)
-  return label || String(value)
+  const label = getDictLabel(dictType, value);
+  return label || String(value);
 }
 
 // dayjs()

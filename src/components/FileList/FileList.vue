@@ -1,67 +1,67 @@
 <script lang="ts" setup>
 // windsurf- 附件列表组件
-import { http } from '@/http/http'
-import { downloadFile } from '@/utils/download'
+import { http } from "@/http/http";
+import { downloadFile } from "@/utils/download";
 
 defineOptions({
-  name: 'FileList',
-})
+  name: "FileList",
+});
 
 const props = defineProps<{
   // windsurf- 文件ID列表，逗号分隔的字符串
-  ids?: string
-}>()
+  ids?: string;
+}>();
 
 // windsurf- 文件信息类型
 interface IFileInfo {
-  id: number
-  configId: number
-  name: string
-  path: string
-  url: string
-  type: string
-  size: number
-  createTime: number
+  id: number;
+  configId: number;
+  name: string;
+  path: string;
+  url: string;
+  type: string;
+  size: number;
+  createTime: number;
 }
 
 // windsurf- 文件列表
-const fileList = ref<IFileInfo[]>([])
-const loading = ref(false)
+const fileList = ref<IFileInfo[]>([]);
+const loading = ref(false);
 
 // windsurf- 获取文件列表
 async function fetchFileList() {
   if (!props.ids) {
-    fileList.value = []
-    return
+    fileList.value = [];
+    return;
   }
 
-  loading.value = true
+  loading.value = true;
   try {
-    const res = await http.get<IFileInfo[]>('/infra/file/urlList', { ids: props.ids })
-    fileList.value = res || []
+    const res = await http.get<IFileInfo[]>("/infra/file/urlList", { ids: props.ids });
+    fileList.value = res || [];
   }
   catch (error) {
-    console.error('获取文件列表失败:', error)
-    fileList.value = []
+    console.error("获取文件列表失败:", error);
+    fileList.value = [];
   }
   finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
 // windsurf- 格式化文件大小
 function formatFileSize(size: number): string {
   if (size < 1024)
-    return `${size} B`
+    return `${size} B`;
   if (size < 1024 * 1024)
-    return `${(size / 1024).toFixed(1)} KB`
-  return `${(size / 1024 / 1024).toFixed(1)} MB`
+    return `${(size / 1024).toFixed(1)} KB`;
+  return `${(size / 1024 / 1024).toFixed(1)} MB`;
 }
 
 // windsurf- 监听 ids 变化
 watch(() => props.ids, () => {
-  fetchFileList()
-}, { immediate: true })
+  fetchFileList();
+}, { immediate: true });
 </script>
 
 <template>

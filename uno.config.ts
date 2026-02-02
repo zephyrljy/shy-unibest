@@ -1,18 +1,18 @@
 import type {
   Preset,
-} from 'unocss'
-import { FileSystemIconLoader } from '@iconify/utils/lib/loader/node-loaders'
+} from "unocss";
+import { FileSystemIconLoader } from "@iconify/utils/lib/loader/node-loaders";
 
 // https://www.npmjs.com/package/@uni-helper/unocss-preset-uni
-import { presetUni } from '@uni-helper/unocss-preset-uni'
+import { presetUni } from "@uni-helper/unocss-preset-uni";
 // @see https://unocss.dev/presets/legacy-compat
-import { presetLegacyCompat } from '@unocss/preset-legacy-compat'
+import { presetLegacyCompat } from "@unocss/preset-legacy-compat";
 import {
   defineConfig,
   presetIcons,
   transformerDirectives,
   transformerVariantGroup,
-} from 'unocss'
+} from "unocss";
 
 export default defineConfig({
   presets: [
@@ -23,26 +23,26 @@ export default defineConfig({
       scale: 1.2,
       warn: true,
       extraProperties: {
-        'display': 'inline-block',
-        'vertical-align': 'middle',
+        "display": "inline-block",
+        "vertical-align": "middle",
       },
       collections: {
         // 注册本地 SVG 图标集合, 从本地文件系统加载图标
         // 在 './src/static/my-icons' 目录下的所有 svg 文件将被注册为图标，
         // my-icons 是图标集合名称，使用 `i-my-icons-图标名` 调用
-        'my-icons': FileSystemIconLoader(
-          './src/static/my-icons',
+        "my-icons": FileSystemIconLoader(
+          "./src/static/my-icons",
           // 可选的，你可以提供一个 transform 回调来更改每个图标
           (svg) => {
-            let svgStr = svg
+            let svgStr = svg;
 
             // 如果 SVG 文件未定义 `fill` 属性，则默认填充 `currentColor`, 这样图标颜色会继承文本颜色，方便在不同场景下适配
-            svgStr = svgStr.includes('fill="') ? svgStr : svgStr.replace(/^<svg /, '<svg fill="currentColor" ')
+            svgStr = svgStr.includes('fill="') ? svgStr : svgStr.replace(/^<svg /, '<svg fill="currentColor" ');
 
             // 如果 svg 有 width, 和 height 属性，将这些属性改为 1em，否则无法显示图标
-            svgStr = svgStr.replace(/(<svg.*?width=)"(.*?)"/, '$1"1em"').replace(/(<svg.*?height=)"(.*?)"/, '$1"1em"')
+            svgStr = svgStr.replace(/(<svg.*?width=)"(.*?)"/, '$1"1em"').replace(/(<svg.*?height=)"(.*?)"/, '$1"1em"');
 
-            return svgStr
+            return svgStr;
           },
         ),
       },
@@ -67,36 +67,36 @@ export default defineConfig({
   ],
   shortcuts: [
     {
-      center: 'flex justify-center items-center',
+      center: "flex justify-center items-center",
     },
   ],
   // 动态图标需要在这里配置，或者写在vue页面中注释掉
-  safelist: ['i-carbon-code', 'i-carbon-home', 'i-carbon-user', 'i-carbon-ai-financial-sustainability-check', 'i-carbon-list-bulleted', 'i-carbon-send-alt'],
+  safelist: ["i-carbon-code", "i-carbon-home", "i-carbon-user", "i-carbon-ai-financial-sustainability-check", "i-carbon-list-bulleted", "i-carbon-send-alt"],
   rules: [
     [
-      'p-safe',
+      "p-safe",
       {
         padding:
-          'env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)',
+          "env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)",
       },
     ],
-    ['pt-safe', { 'padding-top': 'env(safe-area-inset-top)' }],
-    ['pb-safe', { 'padding-bottom': 'env(safe-area-inset-bottom)' }],
+    ["pt-safe", { "padding-top": "env(safe-area-inset-top)" }],
+    ["pb-safe", { "padding-bottom": "env(safe-area-inset-bottom)" }],
     [
-      'scrollbar-hide',
+      "scrollbar-hide",
       {
-        'scrollbar-width': 'none', /* Firefox */
-        '-ms-overflow-style': 'none', /* IE and Edge */
+        "scrollbar-width": "none", /* Firefox */
+        "-ms-overflow-style": "none", /* IE and Edge */
       },
       {
-        '&::-webkit-scrollbar': {
-          display: 'none', /* Chrome, Safari, Opera */
+        "&::-webkit-scrollbar": {
+          display: "none", /* Chrome, Safari, Opera */
         },
       },
     ],
 
     [
-      'h-page',
+      "h-page",
       {
         height: `calc(
           100dvh
@@ -123,12 +123,12 @@ export default defineConfig({
   theme: {
     colors: {
       /** 主题色，用法如: text-primary */
-      primary: 'var(--wot-color-theme,#0957DE)',
+      primary: "var(--wot-color-theme,#0957DE)",
     },
     fontSize: {
       /** 提供更小号的字体，用法如：text-2xs */
-      '2xs': ['20rpx', '28rpx'],
-      '3xs': ['18rpx', '26rpx'],
+      "2xs": ["20rpx", "28rpx"],
+      "3xs": ["18rpx", "26rpx"],
     },
   },
   // windows 系统会报错：[plugin:unocss:transformers:pre] Cannot overwrite a zero-length range - use append Left or prependRight instead.
@@ -153,4 +153,4 @@ export default defineConfig({
   //     ],
   //   },
   // },
-})
+});

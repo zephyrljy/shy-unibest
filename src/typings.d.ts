@@ -2,56 +2,56 @@
 
 declare global {
   interface IResData<T> {
-    code: number
-    msg: string
-    data: T
+    code: number;
+    msg: string;
+    data: T;
   }
 
   // uni.uploadFile文件上传参数
   interface IUniUploadFileOptions {
-    file?: File
-    files?: UniApp.UploadFileOptionFiles[]
-    filePath?: string
-    name?: string
-    formData?: any
+    file?: File;
+    files?: UniApp.UploadFileOptionFiles[];
+    filePath?: string;
+    name?: string;
+    formData?: any;
   }
 
   interface IUserInfo {
-    nickname?: string
-    avatar?: string
+    nickname?: string;
+    avatar?: string;
     /** 微信的 openid，非微信没有这个字段 */
-    openid?: string
+    openid?: string;
   }
 
   interface IUserToken {
-    token: string
-    refreshToken?: string
-    refreshExpire?: number
+    token: string;
+    refreshToken?: string;
+    refreshExpire?: number;
   }
 }
 
 // 扩展 @uni-helper/vite-plugin-uni-pages 的 definePage 参数类型
-declare module '@uni-helper/vite-plugin-uni-pages' {
+declare module "@uni-helper/vite-plugin-uni-pages" {
   interface UserPageMeta {
     /**
      * 使用 type: "home" 属性设置首页，其他页面不需要设置，默认为page
      *
      * 尽量保证一个项目 只有一个 这个配置，如果有多个，会按照字母顺序来排列，最终可能不是您想要的效果。
      */
-    type?: 'home'
+    type?: "home";
     /**
      * 页面布局类型, 模板默认只有 default, 如果在 src/layouts 下新增了 layout, 可以扩展当前属性
      * @default 'default'
      *
      * 当前属性供 https://github.com/uni-helper/vite-plugin-uni-layouts 插件使用
      */
-    layout?: 'default'
+    layout?: "default";
     /**
      * 是否从需要登录的路径中排除
      *
      * 登录授权(可选)：跟以前的 needLogin 类似功能，但是同时支持黑白名单，详情请见 src/router 文件夹
      */
-    excludeLoginPath?: boolean
+    excludeLoginPath?: boolean;
   }
 }
 
@@ -62,49 +62,49 @@ declare module '@uni-helper/vite-plugin-uni-pages' {
 declare global {
   declare namespace UniNamespace {
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-    type HideLoadingCompleteCallback = (res: GeneralCallbackResult) => void
+    type HideLoadingCompleteCallback = (res: GeneralCallbackResult) => void;
     /** 接口调用失败的回调函数 */
-    type HideLoadingFailCallback = (res: GeneralCallbackResult) => void
+    type HideLoadingFailCallback = (res: GeneralCallbackResult) => void;
     /** 接口调用成功的回调函数 */
-    type HideLoadingSuccessCallback = (res: GeneralCallbackResult) => void
+    type HideLoadingSuccessCallback = (res: GeneralCallbackResult) => void;
 
     interface HideLoadingOption {
       /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-      complete?: HideLoadingCompleteCallback
+      complete?: HideLoadingCompleteCallback;
       /** 接口调用失败的回调函数 */
-      fail?: HideLoadingFailCallback
-      test: UniNamespace.GeneralCallbackResult
+      fail?: HideLoadingFailCallback;
+      test: UniNamespace.GeneralCallbackResult;
       /**
        * 微信小程序：需要基础库： `2.22.1`
        *
        * 微信小程序：目前 toast 和 loading 相关接口可以相互混用，此参数可用于取消混用特性
        */
-      noConflict?: boolean
+      noConflict?: boolean;
       /** 接口调用成功的回调函数 */
-      success?: HideLoadingSuccessCallback
+      success?: HideLoadingSuccessCallback;
     }
 
     // ----------------------------------------------------------
 
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-    type HideToastCompleteCallback = (res: GeneralCallbackResult) => void
+    type HideToastCompleteCallback = (res: GeneralCallbackResult) => void;
     /** 接口调用失败的回调函数 */
-    type HideToastFailCallback = (res: GeneralCallbackResult) => void
+    type HideToastFailCallback = (res: GeneralCallbackResult) => void;
     /** 接口调用成功的回调函数 */
-    type HideToastSuccessCallback = (res: GeneralCallbackResult) => void
+    type HideToastSuccessCallback = (res: GeneralCallbackResult) => void;
     interface HideToastOption {
       /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-      complete?: HideToastCompleteCallback
+      complete?: HideToastCompleteCallback;
       /** 接口调用失败的回调函数 */
-      fail?: HideToastFailCallback
+      fail?: HideToastFailCallback;
       /**
        * 微信小程序：需要基础库： `2.22.1`
        *
        * 微信小程序：目前 toast 和 loading 相关接口可以相互混用，此参数可用于取消混用特性
        */
-      noConflict?: boolean
+      noConflict?: boolean;
       /** 接口调用成功的回调函数 */
-      success?: HideToastSuccessCallback
+      success?: HideToastSuccessCallback;
     }
   }
   interface Uni {
@@ -139,7 +139,7 @@ declare global {
      * }
      */
     // eslint-disable-next-line ts/method-signature-style
-    hideLoading<T extends UniNamespace.HideToastOption = UniNamespace.HideToastOption>(options?: T): void
+    hideLoading<T extends UniNamespace.HideToastOption = UniNamespace.HideToastOption>(options?: T): void;
     /**
      * 隐藏消息提示框
      *
@@ -164,8 +164,8 @@ declare global {
      * }
      */
     // eslint-disable-next-line ts/method-signature-style
-    hideToast<T extends UniNamespace.HideLoadingOption = UniNamespace.HideLoadingOption>(options?: T): void
+    hideToast<T extends UniNamespace.HideLoadingOption = UniNamespace.HideLoadingOption>(options?: T): void;
   }
 }
 
-export {} // 防止模块污染
+export {}; // 防止模块污染

@@ -1,94 +1,94 @@
 <script lang="ts" setup>
 // windsurf- 流程展示组件，用于展示审批流程信息
-import { getTaskListByProcessInstanceId } from '@/api/approval'
-import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
-import { formatDate } from '@/utils/format'
+import { getTaskListByProcessInstanceId } from "@/api/approval";
+import { DICT_TYPE, getIntDictOptions } from "@/utils/dict";
+import { formatDate } from "@/utils/format";
 
 defineOptions({
-  name: 'Process',
-})
+  name: "Process",
+});
 
 const props = withDefaults(defineProps<Props>(), {
-  title: '流程跳转信息',
-  processInstanceId: '',
+  title: "流程跳转信息",
+  processInstanceId: "",
   api: undefined,
-  options: () => getIntDictOptions(DICT_TYPE.BPM_PROCESS_INSTANCE_RESULT) as Array<{ label: string, value: string | number, colorType?: string }>,
+  options: () => getIntDictOptions(DICT_TYPE.BPM_PROCESS_INSTANCE_RESULT) as Array<{ label: string; value: string | number; colorType?: string }>,
   labelWidth: 60,
   columns: () => [
-    { title: '审批人', dataIndex: 'nickname' },
-    { title: '审批结果', dataIndex: 'result', tag: true },
-    { title: '审批评论', dataIndex: 'reason' },
+    { title: "审批人", dataIndex: "nickname" },
+    { title: "审批结果", dataIndex: "result", tag: true },
+    { title: "审批评论", dataIndex: "reason" },
   ],
-  timeFormat: 'YYYY-MM-DD HH:mm:ss',
-})
+  timeFormat: "YYYY-MM-DD HH:mm:ss",
+});
 
 // windsurf- 列配置类型
 interface ColumnItem {
-  title: string
-  dataIndex: string
-  labelWidth?: number | string
-  tag?: boolean
-  options?: Array<{ label: string, value: string | number, colorType?: string }>
-  ifShow?: boolean | ((record: Record<string, any>, index: number) => boolean)
-  customRender?: (record: Record<string, any>) => string
+  title: string;
+  dataIndex: string;
+  labelWidth?: number | string;
+  tag?: boolean;
+  options?: Array<{ label: string; value: string | number; colorType?: string }>;
+  ifShow?: boolean | ((record: Record<string, any>, index: number) => boolean);
+  customRender?: (record: Record<string, any>) => string;
 }
 
 // windsurf- Props 定义
 interface Props {
   // windsurf- 标题
-  title?: string
+  title?: string;
   // windsurf- 流程实例ID
-  processInstanceId?: string
+  processInstanceId?: string;
   // windsurf- 自定义API
-  api?: () => Promise<Record<string, any>[]>
+  api?: () => Promise<Record<string, any>[]>;
   // windsurf- 状态选项
-  options?: Array<{ label: string, value: string | number, color?: string }>
+  options?: Array<{ label: string; value: string | number; color?: string }>;
   // windsurf- 标签宽度
-  labelWidth?: number
+  labelWidth?: number;
   // windsurf- 列配置
-  columns?: ColumnItem[]
+  columns?: ColumnItem[];
   // windsurf- 时间格式
-  timeFormat?: string
+  timeFormat?: string;
 }
 
 // windsurf- 任务列表数据
-const taskList = ref<Record<string, any>[]>([])
+const taskList = ref<Record<string, any>[]>([]);
 
 // windsurf- 加载状态
-const loading = ref(false)
+const loading = ref(false);
 
 // windsurf- 展开状态
-const expandedKeys = ref<(string | number)[]>([])
+const expandedKeys = ref<(string | number)[]>([]);
 
 // windsurf- 平铺children数组
 function flatChildren(arr: Record<string, any>[]): Record<string, any>[] {
-  const result: Record<string, any>[] = []
+  const result: Record<string, any>[] = [];
   for (const cur of arr) {
     if (cur.children && cur.children.length > 0) {
-      result.push(...flatChildren(cur.children))
-      delete cur.children
+      result.push(...flatChildren(cur.children));
+      delete cur.children;
     }
-    result.push(cur)
+    result.push(cur);
   }
-  return result
+  return result;
 }
 
 // windsurf- 获取任务列表
 async function getTasks(instanceId: string) {
   if (!instanceId)
-    return
-  loading.value = true
+    return;
+  loading.value = true;
   try {
-    const data = await getTaskListByProcessInstanceId(instanceId) as Record<string, any>[]
+    const data = await getTaskListByProcessInstanceId(instanceId) as Record<string, any>[];
     taskList.value = data.map(task => ({
       ...task,
       taskList: flatChildren(task.taskList?.filter((child: Record<string, any>) => child.result !== 4) || []),
-    }))
+    }));
     // windsurf- 初始化展开所有项
-    expandedKeys.value = taskList.value.map(item => item.definitionKey)
+    expandedKeys.value = taskList.value.map(item => item.definitionKey);
   }
   finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
@@ -97,96 +97,96 @@ watch(
   () => props.processInstanceId,
   (val) => {
     if (val) {
-      getTasks(val)
+      getTasks(val);
     }
   },
-)
+);
 
 // windsurf- 页面加载
 onMounted(async () => {
   if (props.api) {
-    taskList.value = await props.api()
-    expandedKeys.value = taskList.value.map(item => item.definitionKey)
+    taskList.value = await props.api();
+    expandedKeys.value = taskList.value.map(item => item.definitionKey);
   }
   else if (props.processInstanceId) {
-    getTasks(props.processInstanceId)
+    getTasks(props.processInstanceId);
   }
-})
+});
 
 // windsurf- 切换展开状态
 function toggleExpand(key: string | number) {
-  const index = expandedKeys.value.indexOf(key)
+  const index = expandedKeys.value.indexOf(key);
   if (index > -1) {
-    expandedKeys.value.splice(index, 1)
+    expandedKeys.value.splice(index, 1);
   }
   else {
-    expandedKeys.value.push(key)
+    expandedKeys.value.push(key);
   }
 }
 
 // windsurf- 判断是否展开
 function isExpanded(key: string | number) {
-  return expandedKeys.value.includes(key)
+  return expandedKeys.value.includes(key);
 }
 
 // windsurf- 获取状态标签
 function getStatusTag(value: string | number): any {
-  const option = props.options.find(item => item.value === value)
+  const option = props.options.find(item => item.value === value);
 
-  return option || { label: '-', color: '#999' }
+  return option || { label: "-", color: "#999" };
 }
 
 // windsurf- 获取列值
 function getColumnValue(record: Record<string, any>, column: ColumnItem) {
   if (column.customRender) {
-    return column.customRender(record)
+    return column.customRender(record);
   }
   // windsurf- 如果是tag类型，使用column.options或props.options
   if (column.tag) {
-    const options = column.options || props.options
-    const option = options.find(item => item.value === record[column.dataIndex])
+    const options = column.options || props.options;
+    const option = options.find(item => item.value === record[column.dataIndex]);
 
-    return option?.label || record[column.dataIndex] || '-'
+    return option?.label || record[column.dataIndex] || "-";
   }
 
-  const value = record[column.dataIndex]
-  return value === '' || value === null || value === undefined ? '-' : value
+  const value = record[column.dataIndex];
+  return value === "" || value === null || value === undefined ? "-" : value;
 }
 
 // windsurf- 获取列标签颜色
 function getColumnTagColor(record: Record<string, any>, column: ColumnItem) {
   if (column.tag) {
-    const options: any = column.options || props.options
-    const option = options.find(item => item.value === record[column.dataIndex])
-    return option?.colorType || '#999'
+    const options: any = column.options || props.options;
+    const option = options.find(item => item.value === record[column.dataIndex]);
+    return option?.colorType || "#999";
   }
-  return ''
+  return "";
 }
 
 // windsurf- 判断列是否显示
 function isColumnVisible(column: ColumnItem, record: Record<string, any>, index: number) {
-  if (typeof column.ifShow === 'function') {
-    return column.ifShow(record, index)
+  if (typeof column.ifShow === "function") {
+    return column.ifShow(record, index);
   }
-  return column.ifShow !== false
+  return column.ifShow !== false;
 }
 
 // windsurf- 格式化时间
 function formatTime(time: string | number) {
   if (!time)
-    return ''
-  return formatDate(time)
+    return "";
+  return formatDate(time);
 }
 
 // windsurf- 获取子节点列表
 function getChildren(record: Record<string, any>) {
-  return record.taskList || []
+  return record.taskList || [];
 }
 
 // windsurf- 获取标签宽度样式
 function getLabelWidthStyle(column: ColumnItem) {
-  const width = column.labelWidth || props.labelWidth
-  return typeof width === 'number' ? `${width}px` : width
+  const width = column.labelWidth || props.labelWidth;
+  return typeof width === "number" ? `${width}px` : width;
 }
 </script>
 

@@ -1,36 +1,36 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
-import { useTokenStore, useUserStore } from '@/store'
+import { computed } from "vue";
+import { useTokenStore, useUserStore } from "@/store";
 
 definePage({
   style: {
-    navigationBarTitleText: '我的',
-    navigationStyle: 'custom',
+    navigationBarTitleText: "我的",
+    navigationStyle: "custom",
   },
-})
+});
 
-const userStore = useUserStore()
-const tokenStore = useTokenStore()
+const userStore = useUserStore();
+const tokenStore = useTokenStore();
 
-const userInfo = computed(() => userStore.userInfo)
+const userInfo = computed(() => userStore.userInfo);
 
 // windsurf- 版本信息
-const version = '1.0.0'
+const version = "1.0.0";
 
 // windsurf- 退出登录
 function handleLogout() {
   uni.showModal({
-    title: '提示',
-    content: '确定要退出登录吗？',
+    title: "提示",
+    content: "确定要退出登录吗？",
     success: (res) => {
       if (res.confirm) {
-        tokenStore.logout()
+        tokenStore.logout();
         uni.reLaunch({
-          url: '/pages/login/index',
-        })
+          url: "/pages/login/index",
+        });
       }
     },
-  })
+  });
 }
 </script>
 

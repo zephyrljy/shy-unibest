@@ -1,14 +1,14 @@
 <script setup lang="ts">
 // i-carbon-code
-import type { CustomTabBarItem } from './types'
-import { customTabbarEnable, needHideNativeTabbar, tabbarCacheEnable } from './config'
-import { tabbarList, tabbarStore } from './store'
+import type { CustomTabBarItem } from "./types";
+import { customTabbarEnable, needHideNativeTabbar, tabbarCacheEnable } from "./config";
+import { tabbarList, tabbarStore } from "./store";
 
 // #ifdef MP-WEIXIN
 // 将自定义节点设置成虚拟的（去掉自定义组件包裹层），更加接近Vue组件的表现，能更好的使用flex属性
 defineOptions({
   virtualHost: true,
-})
+});
 // #endif
 
 /**
@@ -16,27 +16,27 @@ defineOptions({
  */
 function handleClickBulge() {
   uni.showToast({
-    title: '点击了中间的鼓包tabbarItem',
-    icon: 'none',
-  })
+    title: "点击了中间的鼓包tabbarItem",
+    icon: "none",
+  });
 }
 
 function handleClick(index: number) {
   // 点击原来的不做操作
   if (index === tabbarStore.curIdx) {
-    return
+    return;
   }
   if (tabbarList[index].isBulge) {
-    handleClickBulge()
-    return
+    handleClickBulge();
+    return;
   }
-  const url = tabbarList[index].pagePath
-  tabbarStore.setCurIdx(index)
+  const url = tabbarList[index].pagePath;
+  tabbarStore.setCurIdx(index);
   if (tabbarCacheEnable) {
-    uni.switchTab({ url })
+    uni.switchTab({ url });
   }
   else {
-    uni.navigateTo({ url })
+    uni.navigateTo({ url });
   }
 }
 // #ifndef MP-WEIXIN || MP-ALIPAY
@@ -46,13 +46,13 @@ onLoad(() => {
   needHideNativeTabbar
   && uni.hideTabBar({
     fail(err) {
-      console.log('hideTabBar fail: ', err)
+      console.log("hideTabBar fail: ", err);
     },
     success(res) {
       // console.log('hideTabBar success: ', res)
     },
-  })
-})
+  });
+});
 // #endif
 
 // #ifdef MP-ALIPAY
@@ -61,26 +61,26 @@ onMounted(() => {
   customTabbarEnable // 另外，支付宝里面，只要是 customTabbar 都需要隐藏
   && uni.hideTabBar({
     fail(err) {
-      console.log('hideTabBar fail: ', err)
+      console.log("hideTabBar fail: ", err);
     },
     success(res) {
       // console.log('hideTabBar success: ', res)
     },
-  })
-})
+  });
+});
 // #endif
-const activeColor = 'var(--wot-color-theme, #1890ff)'
-const inactiveColor = '#666'
+const activeColor = "var(--wot-color-theme, #1890ff)";
+const inactiveColor = "#666";
 function getColorByIndex(index: number) {
-  return tabbarStore.curIdx === index ? activeColor : inactiveColor
+  return tabbarStore.curIdx === index ? activeColor : inactiveColor;
 }
 
 function getImageByIndex(index: number, item: CustomTabBarItem) {
   if (!item.iconActive) {
-    console.warn('image 模式下，需要配置 iconActive (高亮时的图片），否则无法切换高亮图片')
-    return item.icon
+    console.warn("image 模式下，需要配置 iconActive (高亮时的图片），否则无法切换高亮图片");
+    return item.icon;
   }
-  return tabbarStore.curIdx === index ? item.iconActive : item.icon
+  return tabbarStore.curIdx === index ? item.iconActive : item.icon;
 }
 </script>
 

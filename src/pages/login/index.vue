@@ -1,34 +1,34 @@
 <script lang="ts" setup>
-import md5 from 'crypto-js/md5'
+import md5 from "crypto-js/md5";
 // i-carbon-user i-carbon-password i-carbon-view i-carbon-view-off i-carbon-checkmark
-import { useTokenStore } from '@/store'
-import { useDictStore } from '@/store/dict'
+import { useTokenStore } from "@/store";
+import { useDictStore } from "@/store/dict";
 
 defineOptions({
-  name: 'Login',
-})
+  name: "Login",
+});
 
 definePage({
   style: {
-    navigationStyle: 'custom',
-    navigationBarTitleText: '登录',
+    navigationStyle: "custom",
+    navigationBarTitleText: "登录",
   },
-})
+});
 
 // 表单数据
 const formData = reactive({
-  username: '',
-  password: '',
+  username: "",
+  password: "",
   rememberMe: false,
-})
+});
 
 // 状态管理
-const showPassword = ref(false)
-const isLoading = ref(false)
+const showPassword = ref(false);
+const isLoading = ref(false);
 
 // 切换密码可见性
 function togglePasswordVisibility() {
-  showPassword.value = !showPassword.value
+  showPassword.value = !showPassword.value;
 }
 
 // 处理登录
@@ -36,62 +36,62 @@ async function handleLogin() {
   // 表单验证
   if (!formData.username.trim()) {
     uni.showToast({
-      title: '请输入用户名',
-      icon: 'none',
-    })
-    return
+      title: "请输入用户名",
+      icon: "none",
+    });
+    return;
   }
 
   if (!formData.password) {
     uni.showToast({
-      title: '请输入密码',
-      icon: 'none',
-    })
-    return
+      title: "请输入密码",
+      icon: "none",
+    });
+    return;
   }
 
   // 开始加载
-  isLoading.value = true
+  isLoading.value = true;
 
   try {
-    const tokenStore = useTokenStore()
+    const tokenStore = useTokenStore();
     await tokenStore.login({
       username: formData.username,
       password: md5(formData.password).toString(),
-    })
+    });
     // windsurf- 登录成功后加载字典数据
-    const dictStore = useDictStore()
-    await dictStore.setDictMap()
+    const dictStore = useDictStore();
+    await dictStore.setDictMap();
     // 登录成功后跳转到首页
     setTimeout(() => {
       uni.reLaunch({
-        url: '/pages/index/index',
-      })
-    }, 500)
+        url: "/pages/index/index",
+      });
+    }, 500);
   }
   catch (error) {
     // 错误在 tokenStore 或 http 拦截器中已经处理过 toast，这里不需要重复处理
-    console.error(error)
+    console.error(error);
   }
   finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
 }
 
 // 忘记密码
 function handleForgotPassword() {
   uni.showToast({
-    title: '请联系管理员重置密码',
-    icon: 'none',
+    title: "请联系管理员重置密码",
+    icon: "none",
     duration: 2000,
-  })
+  });
 }
 
 // 注册
 function handleRegister() {
   uni.navigateTo({
-    url: '/pages/register/register',
-  })
+    url: "/pages/register/register",
+  });
 }
 </script>
 

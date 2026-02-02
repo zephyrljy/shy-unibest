@@ -6,7 +6,7 @@ interface DebounceOptions {
   /**
    * An optional AbortSignal to cancel the debounced function.
    */
-  signal?: AbortSignal
+  signal?: AbortSignal;
 
   /**
    * An optional array specifying whether the function should be invoked on the leading edge, trailing edge, or both.
@@ -15,11 +15,11 @@ interface DebounceOptions {
    * If both "leading" and "trailing" are included, the function will be invoked at both the start and end of the delay period.
    * @default ["trailing"]
    */
-  edges?: Array<'leading' | 'trailing'>
+  edges?: Array<"leading" | "trailing">;
 }
 
 export interface DebouncedFunction<F extends (...args: any[]) => void> {
-  (...args: Parameters<F>): void
+  (...args: Parameters<F>): void;
 
   /**
    * Schedules the execution of the debounced function after the specified debounce delay.
@@ -29,19 +29,19 @@ export interface DebouncedFunction<F extends (...args: any[]) => void> {
    *
    * @returns {void}
    */
-  schedule: () => void
+  schedule: () => void;
 
   /**
    * Cancels any pending execution of the debounced function.
    * This method clears the active timer and resets any stored context or arguments.
    */
-  cancel: () => void
+  cancel: () => void;
 
   /**
    * Immediately invokes the debounced function if there is a pending execution.
    * This method executes the function right away if there is a pending execution.
    */
-  flush: () => void
+  flush: () => void;
 }
 
 /**
@@ -84,83 +84,83 @@ export function debounce<F extends (...args: any[]) => void>(
   debounceMs: number,
   { signal, edges }: DebounceOptions = {},
 ): DebouncedFunction<F> {
-  let pendingThis: any
-  let pendingArgs: Parameters<F> | null = null
+  let pendingThis: any;
+  let pendingArgs: Parameters<F> | null = null;
 
-  const leading = edges != null && edges.includes('leading')
-  const trailing = edges == null || edges.includes('trailing')
+  const leading = edges != null && edges.includes("leading");
+  const trailing = edges == null || edges.includes("trailing");
 
   const invoke = () => {
     if (pendingArgs !== null) {
-      func.apply(pendingThis, pendingArgs)
-      pendingThis = undefined
-      pendingArgs = null
+      func.apply(pendingThis, pendingArgs);
+      pendingThis = undefined;
+      pendingArgs = null;
     }
-  }
+  };
 
   const onTimerEnd = () => {
     if (trailing) {
-      invoke()
+      invoke();
     }
 
     // eslint-disable-next-line ts/no-use-before-define
-    cancel()
-  }
+    cancel();
+  };
 
-  let timeoutId: ReturnType<typeof setTimeout> | null = null
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
   const schedule = () => {
     if (timeoutId != null) {
-      clearTimeout(timeoutId)
+      clearTimeout(timeoutId);
     }
 
     timeoutId = setTimeout(() => {
-      timeoutId = null
+      timeoutId = null;
 
-      onTimerEnd()
-    }, debounceMs)
-  }
+      onTimerEnd();
+    }, debounceMs);
+  };
 
   const cancelTimer = () => {
     if (timeoutId !== null) {
-      clearTimeout(timeoutId)
-      timeoutId = null
+      clearTimeout(timeoutId);
+      timeoutId = null;
     }
-  }
+  };
 
   const cancel = () => {
-    cancelTimer()
-    pendingThis = undefined
-    pendingArgs = null
-  }
+    cancelTimer();
+    pendingThis = undefined;
+    pendingArgs = null;
+  };
 
   const flush = () => {
-    invoke()
-  }
+    invoke();
+  };
 
   const debounced = function (this: any, ...args: Parameters<F>) {
     if (signal?.aborted) {
-      return
+      return;
     }
 
     // eslint-disable-next-line ts/no-this-alias
-    pendingThis = this
-    pendingArgs = args
+    pendingThis = this;
+    pendingArgs = args;
 
-    const isFirstCall = timeoutId == null
+    const isFirstCall = timeoutId == null;
 
-    schedule()
+    schedule();
 
     if (leading && isFirstCall) {
-      invoke()
+      invoke();
     }
-  }
+  };
 
-  debounced.schedule = schedule
-  debounced.cancel = cancel
-  debounced.flush = flush
+  debounced.schedule = schedule;
+  debounced.cancel = cancel;
+  debounced.flush = flush;
 
-  signal?.addEventListener('abort', cancel, { once: true })
+  signal?.addEventListener("abort", cancel, { once: true });
 
-  return debounced
+  return debounced;
 }

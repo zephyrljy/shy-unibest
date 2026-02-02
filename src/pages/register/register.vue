@@ -1,36 +1,36 @@
 <script lang="ts" setup>
 defineOptions({
-  name: 'Register',
-})
+  name: "Register",
+});
 
 definePage({
   style: {
-    navigationStyle: 'custom',
-    navigationBarTitleText: '注册',
+    navigationStyle: "custom",
+    navigationBarTitleText: "注册",
   },
-})
+});
 
 // 表单数据
 const formData = reactive({
-  username: '',
-  phone: '',
-  password: '',
-  confirmPassword: '',
+  username: "",
+  phone: "",
+  password: "",
+  confirmPassword: "",
   agreeTerms: false,
-})
+});
 
 // 状态管理
-const showPassword = ref(false)
-const showConfirmPassword = ref(false)
-const isLoading = ref(false)
+const showPassword = ref(false);
+const showConfirmPassword = ref(false);
+const isLoading = ref(false);
 
 // 切换密码可见性
 function togglePasswordVisibility() {
-  showPassword.value = !showPassword.value
+  showPassword.value = !showPassword.value;
 }
 
 function toggleConfirmPasswordVisibility() {
-  showConfirmPassword.value = !showConfirmPassword.value
+  showConfirmPassword.value = !showConfirmPassword.value;
 }
 
 // 处理注册
@@ -38,93 +38,93 @@ async function handleRegister() {
   // 表单验证
   if (!formData.username.trim()) {
     uni.showToast({
-      title: '请输入用户名',
-      icon: 'none',
-    })
-    return
+      title: "请输入用户名",
+      icon: "none",
+    });
+    return;
   }
 
   if (!formData.phone.trim()) {
     uni.showToast({
-      title: '请输入手机号',
-      icon: 'none',
-    })
-    return
+      title: "请输入手机号",
+      icon: "none",
+    });
+    return;
   }
 
   // 简单的手机号验证
-  const phoneRegex = /^1[3-9]\d{9}$/
+  const phoneRegex = /^1[3-9]\d{9}$/;
   if (!phoneRegex.test(formData.phone)) {
     uni.showToast({
-      title: '请输入正确的手机号',
-      icon: 'none',
-    })
-    return
+      title: "请输入正确的手机号",
+      icon: "none",
+    });
+    return;
   }
 
   if (!formData.password) {
     uni.showToast({
-      title: '请输入密码',
-      icon: 'none',
-    })
-    return
+      title: "请输入密码",
+      icon: "none",
+    });
+    return;
   }
 
   if (formData.password.length < 6) {
     uni.showToast({
-      title: '密码长度至少6位',
-      icon: 'none',
-    })
-    return
+      title: "密码长度至少6位",
+      icon: "none",
+    });
+    return;
   }
 
   if (formData.password !== formData.confirmPassword) {
     uni.showToast({
-      title: '两次密码不一致',
-      icon: 'none',
-    })
-    return
+      title: "两次密码不一致",
+      icon: "none",
+    });
+    return;
   }
 
   if (!formData.agreeTerms) {
     uni.showToast({
-      title: '请阅读并同意用户协议',
-      icon: 'none',
-    })
-    return
+      title: "请阅读并同意用户协议",
+      icon: "none",
+    });
+    return;
   }
 
   // 开始加载
-  isLoading.value = true
+  isLoading.value = true;
 
   // 模拟注册请求
   setTimeout(() => {
-    isLoading.value = false
+    isLoading.value = false;
     uni.showToast({
-      title: '注册成功',
-      icon: 'success',
-    })
+      title: "注册成功",
+      icon: "success",
+    });
 
     // 注册成功后跳转到登录页
     setTimeout(() => {
-      uni.navigateBack()
-    }, 1500)
-  }, 1500)
+      uni.navigateBack();
+    }, 1500);
+  }, 1500);
 }
 
 // 返回登录
 function handleBackToLogin() {
   uni.redirectTo({
-    url: '/pages/login/index',
-  })
+    url: "/pages/login/index",
+  });
 }
 
 // 查看用户协议
 function handleViewTerms() {
   uni.showToast({
-    title: '查看用户协议',
-    icon: 'none',
-  })
+    title: "查看用户协议",
+    icon: "none",
+  });
   // 可以跳转到用户协议页面
   // uni.navigateTo({ url: '/pages/terms/terms' })
 }

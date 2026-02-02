@@ -1,17 +1,17 @@
 <script lang="ts" setup>
 // windsurf- 审批按钮组组件（移植自 PC 端 BasicFlowButtonGroup）
-import { approveTask, getFieldsConfigByTaskId, getTaskListByProcessInstanceId, rejectTask, transferTask } from '@/api/approval'
-import { getUserApi as getDeptUserListKv } from '@/api/kv'
-import useUpload from '@/hooks/useUpload'
-import { useUserStore } from '@/store'
+import { approveTask, getFieldsConfigByTaskId, getTaskListByProcessInstanceId, rejectTask, transferTask } from "@/api/approval";
+import { getUserApi as getDeptUserListKv } from "@/api/kv";
+import useUpload from "@/hooks/useUpload";
+import { useUserStore } from "@/store";
 
 defineOptions({
-  name: 'ApprovalButtonGroup',
-})
+  name: "ApprovalButtonGroup",
+});
 
 const props = withDefaults(defineProps<Props>(), {
   afterApproval: () => () => uni.reLaunch({
-    url: '/pages/index/index',
+    url: "/pages/index/index",
   }),
   schemas: () => [],
   fixedSchemas: () => [],
@@ -19,201 +19,201 @@ const props = withDefaults(defineProps<Props>(), {
   defaultValues: () => ({}),
   showTransfer: false,
   showReject: true,
-  passButtonText: '通过',
-  rejectButtonText: '驳回',
+  passButtonText: "通过",
+  rejectButtonText: "驳回",
   hidden: false,
-})
+});
 
 // windsurf- 事件
 const emit = defineEmits<{
-  (e: 'success', type: 'pass' | 'reject' | 'transfer'): void
-  (e: 'error', error: any): void
-}>()
+  (e: "success", type: "pass" | "reject" | "transfer"): void;
+  (e: "error", error: any): void;
+}>();
 
 // windsurf- Props 定义
 interface Props {
   // windsurf- 流程实例ID
-  processInstanceId: string
+  processInstanceId: string;
   // windsurf- 审批后回调
-  afterApproval?: () => void
+  afterApproval?: () => void;
   // windsurf- 动态表单配置
-  schemas?: any[]
+  schemas?: any[];
   // windsurf- 固定表单配置（始终显示）
-  fixedSchemas?: any[]
+  fixedSchemas?: any[];
   // windsurf- 额外的审批变量
-  variables?: Record<string, any> | (() => Promise<any>)
+  variables?: Record<string, any> | (() => Promise<any>);
   // windsurf- 默认值
-  defaultValues?: Record<string, any> | (() => Promise<any>)
+  defaultValues?: Record<string, any> | (() => Promise<any>);
   // windsurf- 是否显示转办按钮
-  showTransfer?: boolean
+  showTransfer?: boolean;
   // windsurf- 是否显示驳回按钮
-  showReject?: boolean
+  showReject?: boolean;
   // windsurf- 通过按钮文本
-  passButtonText?: string
+  passButtonText?: string;
   // windsurf- 驳回按钮文本
-  rejectButtonText?: string
+  rejectButtonText?: string;
   // windsurf- 是否隐藏按钮组（查看模式）
-  hidden?: boolean
+  hidden?: boolean;
 }
 
 // windsurf- 弹出框状态
-const popoutVisible = ref(false)
+const popoutVisible = ref(false);
 // windsurf- 当前操作类型
-const currentType = ref<'pass' | 'reject' | 'transfer' | null>(null)
+const currentType = ref<"pass" | "reject" | "transfer" | null>(null);
 // windsurf- 弹出框标题
 const popoutTitle = computed(() => {
   switch (currentType.value) {
-    case 'pass':
-      return '审批通过'
-    case 'reject':
-      return '审批驳回'
-    case 'transfer':
-      return '转办'
+    case "pass":
+      return "审批通过";
+    case "reject":
+      return "审批驳回";
+    case "transfer":
+      return "转办";
     default:
-      return '审批'
+      return "审批";
   }
-})
+});
 
 // windsurf- 审批意见
-const reason = ref('')
+const reason = ref("");
 // windsurf- 加载状态
-const loading = ref(false)
+const loading = ref(false);
 // windsurf- 当前任务ID
-const currentTaskId = ref('')
+const currentTaskId = ref("");
 // windsurf- 动态表单数据
-const formData = ref<Record<string, any>>({})
+const formData = ref<Record<string, any>>({});
 // windsurf- 转办用户列表
-const transferUserList = ref<any[]>([])
+const transferUserList = ref<any[]>([]);
 // windsurf- 选中的转办用户
-const assigneeUserId = ref('')
+const assigneeUserId = ref("");
 // windsurf- 上传文件的loading状态
-const uploadingFields = ref<Record<string, boolean>>({})
+const uploadingFields = ref<Record<string, boolean>>({});
 // windsurf- 存储已上传的文件列表 { field: [{ id: string, name: string }] }
-const uploadedFiles = ref<Record<string, Array<{ id: string, name: string }>>>({})
+const uploadedFiles = ref<Record<string, Array<{ id: string; name: string }>>>({});
 
-const equSchemas = ref<any[]>([])
+const equSchemas = ref<any[]>([]);
 
 // windsurf- 处理文件上传
 function handleUpload(field: string) {
   const { run } = useUpload({
-    fileType: 'file',
+    fileType: "file",
     maxSize: 10 * 1024 * 1024, // 10MB
     success: (res) => {
       // windsurf- 上传成功后，将文件ID保存到formData
       try {
-        let fileId = ''
-        let fileName = ''
+        let fileId = "";
+        let fileName = "";
 
         // windsurf- 解析返回的文件ID和文件名
-        if (typeof res === 'string') {
-          const parsed = JSON.parse(res)
-          fileId = parsed?.data?.id || parsed?.id
-          fileName = parsed?.data?.name || parsed?.name || `文件${Date.now()}`
+        if (typeof res === "string") {
+          const parsed = JSON.parse(res);
+          fileId = parsed?.data?.id || parsed?.id;
+          fileName = parsed?.data?.name || parsed?.name || `文件${Date.now()}`;
         }
         else {
-          fileId = res?.id || res?.data?.id
-          fileName = res?.name || res?.data?.name || `文件${Date.now()}`
+          fileId = res?.id || res?.data?.id;
+          fileName = res?.name || res?.data?.name || `文件${Date.now()}`;
         }
 
         if (fileId) {
           // windsurf- 初始化文件列表
           if (!uploadedFiles.value[field]) {
-            uploadedFiles.value[field] = []
+            uploadedFiles.value[field] = [];
           }
 
           // windsurf- 添加新文件到列表
-          uploadedFiles.value[field].push({ id: fileId, name: fileName })
+          uploadedFiles.value[field].push({ id: fileId, name: fileName });
 
           // windsurf- 更新formData，将所有文件ID用逗号拼接
-          const fileIds = uploadedFiles.value[field].map(f => f.id).join(',')
-          formData.value[field] = fileIds
+          const fileIds = uploadedFiles.value[field].map(f => f.id).join(",");
+          formData.value[field] = fileIds;
 
           uni.showToast({
-            title: '上传成功',
-            icon: 'success',
-          })
+            title: "上传成功",
+            icon: "success",
+          });
         }
         else {
           uni.showToast({
-            title: '上传失败，未获取到文件ID',
-            icon: 'none',
-          })
+            title: "上传失败，未获取到文件ID",
+            icon: "none",
+          });
         }
       }
       catch (error) {
-        console.error('解析上传结果失败:', error)
+        console.error("解析上传结果失败:", error);
         uni.showToast({
-          title: '上传失败',
-          icon: 'none',
-        })
+          title: "上传失败",
+          icon: "none",
+        });
       }
       finally {
-        uploadingFields.value[field] = false
+        uploadingFields.value[field] = false;
       }
     },
     error: (err) => {
-      console.error('上传失败:', err)
+      console.error("上传失败:", err);
       uni.showToast({
-        title: '上传失败',
-        icon: 'none',
-      })
-      uploadingFields.value[field] = false
+        title: "上传失败",
+        icon: "none",
+      });
+      uploadingFields.value[field] = false;
     },
-  })
+  });
 
   // windsurf- 设置上传中状态
-  uploadingFields.value[field] = true
+  uploadingFields.value[field] = true;
   // windsurf- 触发文件选择
-  run()
+  run();
 }
 
 // windsurf- 删除已上传的文件
 function handleDeleteFile(field: string, index: number) {
   if (!uploadedFiles.value[field])
-    return
+    return;
 
   // windsurf- 从列表中移除文件
-  uploadedFiles.value[field].splice(index, 1)
+  uploadedFiles.value[field].splice(index, 1);
 
   // windsurf- 更新formData
   if (uploadedFiles.value[field].length > 0) {
-    const fileIds = uploadedFiles.value[field].map(f => f.id).join(',')
-    formData.value[field] = fileIds
+    const fileIds = uploadedFiles.value[field].map(f => f.id).join(",");
+    formData.value[field] = fileIds;
   }
   else {
-    formData.value[field] = ''
+    formData.value[field] = "";
   }
 
   uni.showToast({
-    title: '删除成功',
-    icon: 'success',
-  })
+    title: "删除成功",
+    icon: "success",
+  });
 }
 
 async function loadSchemas() {
-  const taskId = await getTasks(props.processInstanceId)
+  const taskId = await getTasks(props.processInstanceId);
   if (taskId) {
-    currentTaskId.value = taskId
+    currentTaskId.value = taskId;
   }
   if (taskId) {
     try {
-      const equSchemasStr = await getFieldsConfigByTaskId({ taskId })
-      equSchemas.value = JSON.parse(equSchemasStr as string) || []
-      console.log('[ equSchemas ] >', equSchemas.value)
+      const equSchemasStr = await getFieldsConfigByTaskId({ taskId });
+      equSchemas.value = JSON.parse(equSchemasStr as string) || [];
+      console.log("[ equSchemas ] >", equSchemas.value);
     }
     catch (error) {
-      console.error('获取字段配置失败:', error)
-      equSchemas.value = []
+      console.error("获取字段配置失败:", error);
+      equSchemas.value = [];
     }
   }
 }
 
-loadSchemas()
+loadSchemas();
 
 // windsurf- 加载转办用户列表
 async function loadTransferUsers() {
   try {
-    const res = await getDeptUserListKv()
+    const res = await getDeptUserListKv();
 
     transferUserList.value = (res as any[]).map((item: any) => {
       return {
@@ -224,31 +224,31 @@ async function loadTransferUsers() {
         //   label: child.label,
         //   value: child.value,
         // })) || [],
-      }
-    })
+      };
+    });
   }
   catch (error) {
-    console.error('获取转办用户列表失败:', error)
-    transferUserList.value = []
+    console.error("获取转办用户列表失败:", error);
+    transferUserList.value = [];
   }
 }
 
-loadTransferUsers()
+loadTransferUsers();
 
-const innerSchemas = ref([])
+const innerSchemas = ref([]);
 // windsurf- 合并后的schemas
 const mergedSchemas: any = computed(() => {
   // windsurf- 根据任务ID获取字段配置
 
-  let dynamicReason: any = null
+  let dynamicReason: any = null;
 
   return props.schemas
     .map((item) => {
-      const equSchema = equSchemas.value.find((ele: any) => ele.field === item.field) || {}
+      const equSchema = equSchemas.value.find((ele: any) => ele.field === item.field) || {};
       // windsurf- 如果是reason字段且需要显示，单独处理
-      if (item.field === 'reason' && equSchema.show) {
-        dynamicReason = item
-        return null
+      if (item.field === "reason" && equSchema.show) {
+        dynamicReason = item;
+        return null;
       }
       else {
         return {
@@ -256,188 +256,188 @@ const mergedSchemas: any = computed(() => {
           ifShow: !!equSchema.show,
           dynamicDisabled: !equSchema.editable,
           colProps: item?.colProps || { span: 24 },
-        }
+        };
       }
     })
-    .filter(Boolean)
-})
+    .filter(Boolean);
+});
 
-console.log('[ mergedSchemas ] >', mergedSchemas.value)
+console.log("[ mergedSchemas ] >", mergedSchemas.value);
 
 // windsurf- 查找用户任务ID
 function findUserTaskId(taskList: any[], userId: string | number | undefined): string | null {
   if (!userId)
-    return null
+    return null;
   for (const item of taskList) {
     // windsurf- 支持字符串和数字类型的 userId 比较
     if (String(item.userId) === String(userId)) {
-      return item.taskId
+      return item.taskId;
     }
     if (Array.isArray(item.children)) {
-      const childResult = findUserTaskId(item.children, userId)
+      const childResult = findUserTaskId(item.children, userId);
       if (childResult)
-        return childResult
+        return childResult;
     }
   }
-  return null
+  return null;
 }
 
 // windsurf- 获取当前用户的任务ID
 async function getTasks(instanceId: string) {
   try {
-    const data = await getTaskListByProcessInstanceId(instanceId) as any[]
-    const userStore = useUserStore()
+    const data = await getTaskListByProcessInstanceId(instanceId) as any[];
+    const userStore = useUserStore();
     // windsurf- userInfo 中实际用户ID存储在 id 字段
-    const userId = userStore.userInfo?.id || userStore.userInfo?.userId
-    const taskList = data[data.length - 1]?.taskList || []
-    const taskId = findUserTaskId(taskList, userId)
-    return taskId
+    const userId = userStore.userInfo?.id || userStore.userInfo?.userId;
+    const taskList = data[data.length - 1]?.taskList || [];
+    const taskId = findUserTaskId(taskList, userId);
+    return taskId;
   }
   catch (error) {
-    console.error('获取任务ID失败:', error)
-    return null
+    console.error("获取任务ID失败:", error);
+    return null;
   }
 }
 
 // windsurf- 点击通过按钮
 async function handlePass() {
-  currentType.value = 'pass'
-  reason.value = ''
-  formData.value = {}
+  currentType.value = "pass";
+  reason.value = "";
+  formData.value = {};
 
   // windsurf- 处理动态变量和默认值
-  let variables = props.variables
-  let defaultValues = props.defaultValues
+  let variables = props.variables;
+  let defaultValues = props.defaultValues;
 
-  if (typeof variables === 'function') {
-    variables = await variables()
+  if (typeof variables === "function") {
+    variables = await variables();
   }
-  if (typeof defaultValues === 'function') {
-    defaultValues = await defaultValues()
+  if (typeof defaultValues === "function") {
+    defaultValues = await defaultValues();
   }
 
-  formData.value = { ...defaultValues }
-  popoutVisible.value = true
+  formData.value = { ...defaultValues };
+  popoutVisible.value = true;
 }
 
 // windsurf- 点击驳回按钮
 function handleReject() {
-  currentType.value = 'reject'
-  reason.value = ''
-  popoutVisible.value = true
+  currentType.value = "reject";
+  reason.value = "";
+  popoutVisible.value = true;
 }
 
 // windsurf- 点击转办按钮
 async function handleTransfer() {
-  currentType.value = 'transfer'
-  reason.value = ''
+  currentType.value = "transfer";
+  reason.value = "";
 
-  const taskId = await getTasks(props.processInstanceId)
+  const taskId = await getTasks(props.processInstanceId);
   if (taskId) {
-    currentTaskId.value = taskId
+    currentTaskId.value = taskId;
   }
 
-  popoutVisible.value = true
+  popoutVisible.value = true;
 }
 
 // windsurf- 关闭弹出框
 function handleClose() {
-  popoutVisible.value = false
-  currentType.value = null
+  popoutVisible.value = false;
+  currentType.value = null;
 }
 
 // windsurf- 提交审批
 async function handleSubmit() {
-  loading.value = true
-  uni.showLoading({ title: '提交中...', mask: true })
+  loading.value = true;
+  uni.showLoading({ title: "提交中...", mask: true });
   try {
-    if (currentType.value === 'pass') {
+    if (currentType.value === "pass") {
       // windsurf- 校验必填字段（只校验显示的字段）
       if (mergedSchemas.value.length > 0) {
         for (const schema of mergedSchemas.value) {
           // windsurf- 跳过隐藏的字段
           if (schema.ifShow === false) {
-            continue
+            continue;
           }
 
           if (schema.required) {
-            const value = formData.value[schema.field]
+            const value = formData.value[schema.field];
             if (!value || (Array.isArray(value) && value.length === 0)) {
-              uni.hideLoading()
+              uni.hideLoading();
               uni.showToast({
                 title: `请输入${schema.label}`,
-                icon: 'none',
-              })
-              loading.value = false
-              return
+                icon: "none",
+              });
+              loading.value = false;
+              return;
             }
           }
         }
       }
 
       // windsurf- 处理变量
-      let variables = props.variables
-      if (typeof variables === 'function') {
-        variables = await variables()
+      let variables = props.variables;
+      if (typeof variables === "function") {
+        variables = await variables();
       }
 
       await approveTask({
         processInstanceId: props.processInstanceId,
         reason: reason.value,
         variables: JSON.stringify({ ...variables, ...formData.value }),
-      })
+      });
       uni.showToast({
-        title: '审批通过',
-        icon: 'success',
-      })
+        title: "审批通过",
+        icon: "success",
+      });
     }
-    else if (currentType.value === 'reject') {
+    else if (currentType.value === "reject") {
       await rejectTask({
         processInstanceId: props.processInstanceId,
         reason: reason.value,
-      })
+      });
       uni.showToast({
-        title: '已驳回',
-        icon: 'none',
-      })
+        title: "已驳回",
+        icon: "none",
+      });
     }
-    else if (currentType.value === 'transfer') {
+    else if (currentType.value === "transfer") {
       if (!assigneeUserId.value) {
         uni.showToast({
-          title: '请选择转办用户',
-          icon: 'none',
-        })
-        return
+          title: "请选择转办用户",
+          icon: "none",
+        });
+        return;
       }
 
       await transferTask({
         id: currentTaskId.value,
         assigneeUserId: assigneeUserId.value,
-      })
+      });
       uni.showToast({
-        title: '转办成功',
-        icon: 'success',
-      })
+        title: "转办成功",
+        icon: "success",
+      });
     }
     // windsurf- 关闭弹出框
-    handleClose()
+    handleClose();
     // windsurf- 触发成功事件
-    emit('success', currentType.value!)
+    emit("success", currentType.value!);
     uni.reLaunch({
-      url: '/pages/index/index',
-    })
+      url: "/pages/index/index",
+    });
   }
   catch (error) {
-    console.error('审批失败:', error)
-    emit('error', error)
+    console.error("审批失败:", error);
+    emit("error", error);
     // uni.showToast({
     //   title: '审批失败',
     //   icon: 'none',
     // })
   }
   finally {
-    uni.hideLoading()
-    loading.value = false
+    uni.hideLoading();
+    loading.value = false;
   }
 }
 </script>

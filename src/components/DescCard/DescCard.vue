@@ -1,33 +1,33 @@
 <script lang="ts" setup>
 // windsurf- 审批详情展示组件
-import type { DescSchema } from './types'
-import { formatBoolean, formatDate } from '@/utils/format'
+import type { DescSchema } from "./types";
+import { formatBoolean, formatDate } from "@/utils/format";
 
 defineOptions({
-  name: 'DescCard',
-})
+  name: "DescCard",
+});
 
 const props = withDefaults(defineProps<Props>(), {
-  title: '',
-})
+  title: "",
+});
 
 // windsurf- Props 定义
 interface Props {
   // windsurf- 标题
-  title?: string
+  title?: string;
   // windsurf- 数据源
-  data: Record<string, any>
+  data: Record<string, any>;
   // windsurf- 字段配置
-  schemas: DescSchema[]
+  schemas: DescSchema[];
 }
 
 // windsurf- 获取字段值
 function getFieldValue(field: string): string {
-  const value = props.data?.[field]
-  if (value === null || value === undefined || value === '') {
-    return '-'
+  const value = props.data?.[field];
+  if (value === null || value === undefined || value === "") {
+    return "-";
   }
-  return String(value)
+  return String(value);
 }
 </script>
 

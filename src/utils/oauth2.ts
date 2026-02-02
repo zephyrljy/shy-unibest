@@ -3,30 +3,30 @@
 // windsurf- 企业微信配置Map
 export const WECHAT_WORK_CONFIGS = {
   1000016: {
-    corpId: 'ww38439acc33ec914e',
-    secret: 'WRtVvZEFrZkkj-7xUsO69uI_WPeH0sBjQGO9fgz6-uk',
-    agentId: '1000016',
+    corpId: "ww38439acc33ec914e",
+    secret: "WRtVvZEFrZkkj-7xUsO69uI_WPeH0sBjQGO9fgz6-uk",
+    agentId: "1000016",
   },
   1000030: {
-    corpId: 'wwc51809934069a272',
-    secret: 'qIlQkGGZFfQoRDoY4HvvWtr4u9TK-MpywviwXLHLgOk',
-    agentId: '1000030',
+    corpId: "wwc51809934069a272",
+    secret: "qIlQkGGZFfQoRDoY4HvvWtr4u9TK-MpywviwXLHLgOk",
+    agentId: "1000030",
   },
   1000003: {
-    corpId: 'ww31214802cc86fe9d',
-    secret: 'sFPyP5tU7jf3nJcrRsVVPnOuiHDHGKkFqYzpJOXoTIo',
-    agentId: '1000003',
+    corpId: "ww31214802cc86fe9d",
+    secret: "sFPyP5tU7jf3nJcrRsVVPnOuiHDHGKkFqYzpJOXoTIo",
+    agentId: "1000003",
   },
   1000004: {
-    corpId: 'ww8fc17871847acfba',
-    secret: 'c4EdZUfHHxR394VAZINtTVnH4hk_TKjC_xSzu1W6iic',
-    agentId: '1000004',
+    corpId: "ww8fc17871847acfba",
+    secret: "c4EdZUfHHxR394VAZINtTVnH4hk_TKjC_xSzu1W6iic",
+    agentId: "1000004",
   },
-} as const
+} as const;
 
 // windsurf- 获取企业微信配置
 export function getWechatWorkConfig(key: keyof typeof WECHAT_WORK_CONFIGS) {
-  return WECHAT_WORK_CONFIGS[key]
+  return WECHAT_WORK_CONFIGS[key];
 }
 
 /**
@@ -40,20 +40,20 @@ export function getWechatWorkConfig(key: keyof typeof WECHAT_WORK_CONFIGS) {
  * @returns 授权链接
  */
 export function getWechatWorkOAuth2Url(params: {
-  corpId?: string
-  redirectUri?: string
-  state?: string
-  agentId?: string
-  secret?: string
-  scope?: 'snsapi_base' | 'snsapi_privateinfo'
+  corpId?: string;
+  redirectUri?: string;
+  state?: string;
+  agentId?: string;
+  secret?: string;
+  scope?: "snsapi_base" | "snsapi_privateinfo";
 }): string {
-  const { corpId = 'ww38439acc33ec914e', redirectUri = 'https://iot.3h1china.com/', state = '', agentId = '1000016', scope = 'snsapi_base' } = params
+  const { corpId = "ww38439acc33ec914e", redirectUri = "https://iot.3h1china.com/", state = "", agentId = "1000016", scope = "snsapi_base" } = params;
 
   // windsurf- 对redirect_uri进行URL编码
-  const encodedRedirectUri = encodeURIComponent(redirectUri)
+  const encodedRedirectUri = encodeURIComponent(redirectUri);
 
   // windsurf- 构建授权链接
-  const authUrl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${corpId}&redirect_uri=${encodedRedirectUri}&response_type=code&scope=${scope}&state=${state}&agentid=${agentId}#wechat_redirect`
+  const authUrl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${corpId}&redirect_uri=${encodedRedirectUri}&response_type=code&scope=${scope}&state=${state}&agentid=${agentId}#wechat_redirect`;
 
-  return authUrl
+  return authUrl;
 }

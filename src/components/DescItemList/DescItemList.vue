@@ -1,66 +1,66 @@
 <script lang="ts" setup>
 // windsurf- 通用明细列表组件，用于渲染产品/采购等明细信息
-import type { VNode } from 'vue'
-import { getDictLabel } from '@/utils/dict'
-import { formatBoolean, formatDate, formatNumber } from '@/utils/format'
+import type { VNode } from "vue";
+import { getDictLabel } from "@/utils/dict";
+import { formatBoolean, formatDate, formatNumber } from "@/utils/format";
 
 defineOptions({
-  name: 'DescItemList',
-})
+  name: "DescItemList",
+});
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 // windsurf- 列配置类型
 interface ColumnSchema {
-  label: string
-  field: string
-  format?: 'bool2string' | 'date2string' | 'number2money' | 'dict' | 'fileList'
-  dictType?: string
-  customRender?: (record: any) => string | VNode | VNode[]
+  label: string;
+  field: string;
+  format?: "bool2string" | "date2string" | "number2money" | "dict" | "fileList";
+  dictType?: string;
+  customRender?: (record: any) => string | VNode | VNode[];
 }
 
 // windsurf- Props 定义
 interface Props {
   // windsurf- 标题
-  title: string
+  title: string;
   // windsurf- 列配置
-  columns: ColumnSchema[]
+  columns: ColumnSchema[];
   // windsurf- 数据列表
-  list: Record<string, any>[]
+  list: Record<string, any>[];
 }
 
 // windsurf- 判断是否有自定义渲染
 function hasCustomRender(col: ColumnSchema): boolean {
-  return !!col.customRender
+  return !!col.customRender;
 }
 
 // windsurf- 获取自定义渲染内容
 function getCustomRenderValue(item: Record<string, any>, col: ColumnSchema): string | VNode | VNode[] {
-  return col.customRender!(item)
+  return col.customRender!(item);
 }
 
 // windsurf- 获取字段值
 function getFieldValue(item: Record<string, any>, field: string, col: ColumnSchema): string {
-  const value = item?.[field]
-  if (value === null || value === undefined || value === '') {
-    return '-'
+  const value = item?.[field];
+  if (value === null || value === undefined || value === "") {
+    return "-";
   }
 
   // windsurf- 根据format格式化值
-  if (col.format === 'bool2string') {
-    return formatBoolean(value as boolean)
+  if (col.format === "bool2string") {
+    return formatBoolean(value as boolean);
   }
-  if (col.format === 'date2string') {
-    return formatDate(value)
+  if (col.format === "date2string") {
+    return formatDate(value);
   }
-  if (col.format === 'number2money') {
-    return formatNumber(value)
+  if (col.format === "number2money") {
+    return formatNumber(value);
   }
-  if (col.format === 'dict' && col.dictType) {
-    return getDictLabel(col.dictType, value) || String(value)
+  if (col.format === "dict" && col.dictType) {
+    return getDictLabel(col.dictType, value) || String(value);
   }
 
-  return String(value)
+  return String(value);
 }
 </script>
 

@@ -1,15 +1,15 @@
-import type { PageMetaDatum, SubPackages } from '@uni-helper/vite-plugin-uni-pages'
-import { isMpWeixin } from '@uni-helper/uni-env'
-import { pages, subPackages } from '@/pages.json'
+import type { PageMetaDatum, SubPackages } from "@uni-helper/vite-plugin-uni-pages";
+import { isMpWeixin } from "@uni-helper/uni-env";
+import { pages, subPackages } from "@/pages.json";
 
-export type PageInstance = Page.PageInstance<AnyObject, object> & { $page: Page.PageInstance<AnyObject, object> & { fullPath: string } }
+export type PageInstance = Page.PageInstance<AnyObject, object> & { $page: Page.PageInstance<AnyObject, object> & { fullPath: string } };
 
 export function getLastPage() {
   // getCurrentPages() 至少有1个元素，所以不再额外判断
   // const lastPage = getCurrentPages().at(-1)
   // 上面那个在低版本安卓中打包会报错，所以改用下面这个【虽然我加了 src/interceptions/prototype.ts，但依然报错】
-  const pages = getCurrentPages()
-  return pages[pages.length - 1] as PageInstance
+  const pages = getCurrentPages();
+  return pages[pages.length - 1] as PageInstance;
 }
 
 /**
@@ -18,31 +18,31 @@ export function getLastPage() {
  * redirectPath 如 '/pages/demo/base/route-interceptor'
  */
 export function currRoute() {
-  const lastPage = getLastPage() as PageInstance
+  const lastPage = getLastPage() as PageInstance;
   if (!lastPage) {
     return {
-      path: '',
+      path: "",
       query: {},
-    }
+    };
   }
-  const currRoute = lastPage.$page
+  const currRoute = lastPage.$page;
   // console.log('lastPage.$page:', currRoute)
   // console.log('lastPage.$page.fullpath:', currRoute.fullPath)
   // console.log('lastPage.$page.options:', currRoute.options)
   // console.log('lastPage.options:', (lastPage as any).options)
   // 经过多端测试，只有 fullPath 靠谱，其他都不靠谱
-  const { fullPath } = currRoute
+  const { fullPath } = currRoute;
   // console.log(fullPath)
   // eg: /pages/login/login?redirect=%2Fpages%2Fdemo%2Fbase%2Froute-interceptor (小程序)
   // eg: /pages/login/login?redirect=%2Fpages%2Froute-interceptor%2Findex%3Fname%3Dfeige%26age%3D30(h5)
-  return parseUrlToObj(fullPath)
+  return parseUrlToObj(fullPath);
 }
 
 export function ensureDecodeURIComponent(url: string) {
-  if (url.startsWith('%')) {
-    return ensureDecodeURIComponent(decodeURIComponent(url))
+  if (url.startsWith("%")) {
+    return ensureDecodeURIComponent(decodeURIComponent(url));
   }
-  return url
+  return url;
 }
 /**
  * 解析 url 得到 path 和 query
@@ -50,22 +50,22 @@ export function ensureDecodeURIComponent(url: string) {
  * 输出: {path: /pages/login/login, query: {redirect: /pages/demo/base/route-interceptor}}
  */
 export function parseUrlToObj(url: string) {
-  const [path, queryStr] = url.split('?')
+  const [path, queryStr] = url.split("?");
   // console.log(path, queryStr)
 
   if (!queryStr) {
     return {
       path,
       query: {},
-    }
+    };
   }
-  const query: Record<string, string> = {}
-  queryStr.split('&').forEach((item) => {
-    const [key, value] = item.split('=')
+  const query: Record<string, string> = {};
+  queryStr.split("&").forEach((item) => {
+    const [key, value] = item.split("=");
     // console.log(key, value)
-    query[key] = ensureDecodeURIComponent(value) // 这里需要统一 decodeURIComponent 一下，可以兼容h5和微信y
-  })
-  return { path, query }
+    query[key] = ensureDecodeURIComponent(value); // 这里需要统一 decodeURIComponent 一下，可以兼容h5和微信y
+  });
+  return { path, query };
 }
 /**
  * 得到所有的需要登录的 pages，包括主包和分包的
@@ -79,13 +79,13 @@ export function getAllPages(key?: string) {
     .map(page => ({
       ...page,
       path: `/${page.path}`,
-    }))
+    }));
 
   // 这里处理分包
   const subPages: PageMetaDatum[] = []
   ;(subPackages as SubPackages).forEach((subPageObj) => {
     // console.log(subPageObj)
-    const { root } = subPageObj
+    const { root } = subPageObj;
 
     subPageObj.pages
       .filter(page => !key || page[key])
@@ -93,24 +93,24 @@ export function getAllPages(key?: string) {
         subPages.push({
           ...page,
           path: `/${root}/${page.path}`,
-        })
-      })
-  })
-  const result = [...mainPages, ...subPages]
+        });
+      });
+  });
+  const result = [...mainPages, ...subPages];
   // console.log(`getAllPages by ${key} result: `, result)
-  return result
+  return result;
 }
 
 export function getCurrentPageI18nKey() {
-  const routeObj = currRoute()
-  const currPage = (pages as PageMetaDatum[]).find(page => `/${page.path}` === routeObj.path)
+  const routeObj = currRoute();
+  const currPage = (pages as PageMetaDatum[]).find(page => `/${page.path}` === routeObj.path);
   if (!currPage) {
-    console.warn('路由不正确')
-    return ''
+    console.warn("路由不正确");
+    return "";
   }
-  console.log(currPage)
-  console.log(currPage.style.navigationBarTitleText)
-  return currPage.style?.navigationBarTitleText || ''
+  console.log(currPage);
+  console.log(currPage.style.navigationBarTitleText);
+  return currPage.style?.navigationBarTitleText || "";
 }
 
 /**
@@ -118,42 +118,42 @@ export function getCurrentPageI18nKey() {
  */
 export function getEnvBaseUrl() {
   // 请求基准地址
-  let baseUrl = import.meta.env.VITE_SERVER_BASEURL
+  let baseUrl = import.meta.env.VITE_SERVER_BASEURL;
 
   // # 有些同学可能需要在微信小程序里面根据 develop、trial、release 分别设置上传地址，参考代码如下。
-  const VITE_SERVER_BASEURL__WEIXIN_DEVELOP = ''
-  const VITE_SERVER_BASEURL__WEIXIN_TRIAL = ''
-  const VITE_SERVER_BASEURL__WEIXIN_RELEASE = ''
+  const VITE_SERVER_BASEURL__WEIXIN_DEVELOP = "";
+  const VITE_SERVER_BASEURL__WEIXIN_TRIAL = "";
+  const VITE_SERVER_BASEURL__WEIXIN_RELEASE = "";
 
   // 微信小程序端环境区分
   if (isMpWeixin) {
     const {
       miniProgram: { envVersion },
-    } = uni.getAccountInfoSync()
+    } = uni.getAccountInfoSync();
 
     switch (envVersion) {
-      case 'develop':
-        baseUrl = VITE_SERVER_BASEURL__WEIXIN_DEVELOP || baseUrl
-        break
-      case 'trial':
-        baseUrl = VITE_SERVER_BASEURL__WEIXIN_TRIAL || baseUrl
-        break
-      case 'release':
-        baseUrl = VITE_SERVER_BASEURL__WEIXIN_RELEASE || baseUrl
-        break
+      case "develop":
+        baseUrl = VITE_SERVER_BASEURL__WEIXIN_DEVELOP || baseUrl;
+        break;
+      case "trial":
+        baseUrl = VITE_SERVER_BASEURL__WEIXIN_TRIAL || baseUrl;
+        break;
+      case "release":
+        baseUrl = VITE_SERVER_BASEURL__WEIXIN_RELEASE || baseUrl;
+        break;
     }
   }
 
-  return baseUrl
+  return baseUrl;
 }
 
 /**
  * 是否是双token模式
  */
-export const isDoubleTokenMode = import.meta.env.VITE_AUTH_MODE === 'double'
+export const isDoubleTokenMode = import.meta.env.VITE_AUTH_MODE === "double";
 
 /**
  * 首页路径，通过 page.json 里面的 type 为 home 的页面获取，如果没有，则默认是第一个页面
  * 通常为 /pages/index/index
  */
-export const HOME_PAGE = `/${(pages as PageMetaDatum[]).find(page => page.type === 'home')?.path || (pages as PageMetaDatum[])[0].path}`
+export const HOME_PAGE = `/${(pages as PageMetaDatum[]).find(page => page.type === "home")?.path || (pages as PageMetaDatum[])[0].path}`;

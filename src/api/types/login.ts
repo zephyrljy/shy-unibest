@@ -1,82 +1,82 @@
 // 认证模式类型
-export type AuthMode = 'single' | 'double'
+export type AuthMode = "single" | "double";
 
 // 单Token响应类型
 export interface ISingleTokenRes {
-  accessToken: string
-  expiresTime: number // 过期时间戳
+  accessToken: string;
+  expiresTime: number; // 过期时间戳
 }
 
 // 双Token响应类型
 
 export interface IDoubleTokenRes {
-  userId: number
-  accessToken: string
-  refreshToken: string
-  expiresTime: number // 过期时间戳
+  userId: number;
+  accessToken: string;
+  refreshToken: string;
+  expiresTime: number; // 过期时间戳
 }
 
 /**
  * 登录返回的信息，其实就是 token 信息
  */
-export type IAuthLoginRes = ISingleTokenRes | IDoubleTokenRes
+export type IAuthLoginRes = ISingleTokenRes | IDoubleTokenRes;
 
 /**
  * 用户信息
  */
 export interface IUserInfoRes {
-  userId: number
-  username: string
-  nickname: string
-  avatar?: string
-  [key: string]: any // 允许其他扩展字段
+  userId: number;
+  username: string;
+  nickname: string;
+  avatar?: string;
+  [key: string]: any; // 允许其他扩展字段
 }
 
 // 认证存储数据结构
 export interface AuthStorage {
-  mode: AuthMode
-  tokens: ISingleTokenRes | IDoubleTokenRes
-  userInfo?: IUserInfoRes
-  loginTime: number // 登录时间戳
+  mode: AuthMode;
+  tokens: ISingleTokenRes | IDoubleTokenRes;
+  userInfo?: IUserInfoRes;
+  loginTime: number; // 登录时间戳
 }
 
 /**
  * 获取验证码
  */
 export interface ICaptcha {
-  captchaEnabled: boolean
-  uuid: string
-  image: string
+  captchaEnabled: boolean;
+  uuid: string;
+  image: string;
 }
 /**
  * 上传成功的信息
  */
 export interface IUploadSuccessInfo {
-  fileId: number
-  originalName: string
-  fileName: string
-  storagePath: string
-  fileHash: string
-  fileType: string
-  fileBusinessType: string
-  fileSize: number
+  fileId: number;
+  originalName: string;
+  fileName: string;
+  storagePath: string;
+  fileHash: string;
+  fileType: string;
+  fileBusinessType: string;
+  fileSize: number;
 }
 /**
  * 更新用户信息
  */
 export interface IUpdateInfo {
-  id: number
-  name: string
-  sex: string
+  id: number;
+  name: string;
+  sex: string;
 }
 /**
  * 更新用户信息
  */
 export interface IUpdatePassword {
-  id: number
-  oldPassword: string
-  newPassword: string
-  confirmPassword: string
+  id: number;
+  oldPassword: string;
+  newPassword: string;
+  confirmPassword: string;
 }
 
 /**
@@ -85,7 +85,7 @@ export interface IUpdatePassword {
  * @returns 是否为单Token响应
  */
 export function isSingleTokenRes(tokenRes: IAuthLoginRes): tokenRes is ISingleTokenRes {
-  return 'accessToken' in tokenRes && !('refreshToken' in tokenRes)
+  return "accessToken" in tokenRes && !("refreshToken" in tokenRes);
 }
 
 /**
@@ -94,5 +94,5 @@ export function isSingleTokenRes(tokenRes: IAuthLoginRes): tokenRes is ISingleTo
  * @returns 是否为双Token响应
  */
 export function isDoubleTokenRes(tokenRes: IAuthLoginRes): tokenRes is IDoubleTokenRes {
-  return 'accessToken' in tokenRes && 'refreshToken' in tokenRes
+  return "accessToken" in tokenRes && "refreshToken" in tokenRes;
 }
